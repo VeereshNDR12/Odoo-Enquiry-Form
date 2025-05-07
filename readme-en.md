@@ -39,17 +39,19 @@ Set up a Google Form with the following fields:
 2. Delete the default code and **paste the following script**:
 
 ```javascript
-var GITHUB_TOKEN = ""; // Add your GitHub token here
-var REPO_OWNER = "";   // Add your GitHub username or organization name
-var REPO_NAME = "Odoo-Enquiry-Form"; // Your target repository name
+var GITHUB_TOKEN = ""; // GitHubトークンをここに入力
+var REPO_OWNER = "";   // GitHubのユーザー名や組織名
+var REPO_NAME = "Odoo-Enquiry-Form"; // リポジトリ名
 
 function onFormSubmit(e) {
   const responses = e.values;
   Logger.log("Responses: " + JSON.stringify(responses));
 
   const timestamp = responses[0];
-  const title = responses[1];       // お問い合わせタイトル
-  const description = responses[2]; // 説明
+  const title = responses[1];              // お問い合わせタイトル
+  const description = responses[2];        // 説明
+  const imageUpload = responses[3] || "なし"; // サポート画像（Google Drive リンク）
+  const email = responses[4] || "未記入";      // メールアドレス
 
   if (!title || !description) {
     Logger.log("Missing required fields: title or description");
@@ -60,8 +62,13 @@ function onFormSubmit(e) {
   const issueBody = `
 **Timestamp**: ${timestamp}
 
+**Email**: ${email}
+
 **Description**:
 ${description}
+
+**Support Image**:
+${imageUpload !== "なし" ? imageUpload : "（画像はアップロードされていません）"}
 `;
 
   const payload = {
@@ -85,6 +92,7 @@ ${description}
   Logger.log("Status Code: " + response.getResponseCode());
   Logger.log("GitHub Response: " + response.getContentText());
 }
+
 ```
 
 ---
