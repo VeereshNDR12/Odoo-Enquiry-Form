@@ -1,14 +1,16 @@
 # Odoo Enquiry Form to GitHub Issues
 
-This project connects a **Google Form** to a **GitHub repository** to automatically create GitHub Issues based on form responses. It's perfect for collecting structured inquiries (e.g., Odoo support) and managing them in GitHub with automation.
+This project connects a **Google Form** to a **GitHub repository**, automatically creating GitHub Issues from form submissions. It's ideal for collecting structured inquiries (e.g., for Odoo support) and managing them with GitHub automation.
 
-## Features
+---
 
-- Collect form submissions from Google Forms
-- Automatically create GitHub Issues using Google Apps Script
-- Attach timestamp, title, and description
-- Support for Japanese and English fields
-- Logs status and API responses
+## ✨ Features
+
+* Collect submissions using **Google Forms**
+* Automatically create **GitHub Issues** via **Google Apps Script**
+* Includes **timestamp**, **title**, and **description**
+* Supports both **Japanese** and **English** fields
+* Logs API responses and submission status for troubleshooting
 
 ---
 
@@ -16,22 +18,30 @@ This project connects a **Google Form** to a **GitHub repository** to automatica
 
 ### 1. Create a Google Form
 
-Create a Google Form with the following fields:
+Set up a Google Form with the following fields:
 
 1. **Title** (`お問い合わせタイトル`)
 2. **Description** (`説明`)
-3. **Image Upload**(`Optional`)
-4. (Optional) **Timestamp** is automatically collected by Google Forms
+3. **Image Upload** (Optional — currently not handled by the script)
 
-### 2. Open Apps Script
+---
 
-1. In your Form, click the three-dot menu (︙) → **Script Editor**
-2. Replace the default script with the following code:
+### 2. Link Form to Google Sheet
+
+1. In the **Responses** tab of your Google Form, click on the green Sheets icon to create a linked Google Spreadsheet.
+2. Open the linked **Google Sheet**.
+
+---
+
+### 3. Add Google Apps Script
+
+1. In the Google Sheet, go to **Extensions → Apps Script**.
+2. Delete the default code and **paste the following script**:
 
 ```javascript
-var GITHUB_TOKEN = ;
-var REPO_OWNER = ;
-var REPO_NAME = "Odoo-Enquiry-Form";
+var GITHUB_TOKEN = ""; // Add your GitHub token here
+var REPO_OWNER = "";   // Add your GitHub username or organization name
+var REPO_NAME = "Odoo-Enquiry-Form"; // Your target repository name
 
 function onFormSubmit(e) {
   const responses = e.values;
@@ -76,3 +86,38 @@ ${description}
   Logger.log("GitHub Response: " + response.getContentText());
 }
 ```
+
+---
+
+### 4. Generate a GitHub Token
+
+1. Go to your [GitHub Developer Settings](https://github.com/settings/tokens).
+2. Select **"Fine-grained tokens"** and click **"Generate new token"**.
+3. Fill in the required information:
+
+   * **Repository access**: Select the owner and repository where you want to create issues.
+   * **Permissions**: Grant **Read and Write** access to Issues.
+4. Generate the token and **copy it**.
+5. Paste the token into `GITHUB_TOKEN` in your script.
+6. Also update `REPO_OWNER` and `REPO_NAME` as needed.
+
+---
+
+### 5. Add a Trigger
+
+1. In Apps Script, click the clock icon ⏰ (Triggers).
+2. Click **"+ Add Trigger"**.
+3. Choose:
+
+   * **Function**: `onFormSubmit`
+   * **Event source**: "From spreadsheet"
+   * **Event type**: "On form submit"
+4. Save the trigger.
+
+---
+
+### ✅ Test It
+
+* Submit a test response through your Google Form.
+* Check your GitHub repository to confirm the issue was created.
+* Review the **Apps Script Logs** for API response status if needed.
