@@ -48,20 +48,27 @@ function onFormSubmit(e) {
   Logger.log("Responses: " + JSON.stringify(responses));
 
   const timestamp = responses[0];
-  const title = responses[1];       // タイトル
-  const description = responses[2]; // 説明
+  const title = responses[1];              // お問い合わせタイトル
+  const description = responses[2];        // 説明
+  const imageUpload = responses[3] || "なし"; // サポート画像（Google Drive リンク）
+  const email = responses[4] || "未記入";      // メールアドレス
 
   if (!title || !description) {
-    Logger.log("タイトルまたは説明がありません");
+    Logger.log("Missing required fields: title or description");
     return;
   }
 
   const issueTitle = `[Odoo Inquiry] ${title}`;
   const issueBody = `
-**送信日時**: ${timestamp}
+**Timestamp**: ${timestamp}
 
-**説明**:
+**Email**: ${email}
+
+**Description**:
 ${description}
+
+**Support Image**:
+${imageUpload !== "なし" ? imageUpload : "（画像はアップロードされていません）"}
 `;
 
   const payload = {
@@ -82,9 +89,10 @@ ${description}
 
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues`;
   const response = UrlFetchApp.fetch(url, options);
-  Logger.log("ステータスコード: " + response.getResponseCode());
-  Logger.log("GitHubの返答: " + response.getContentText());
+  Logger.log("Status Code: " + response.getResponseCode());
+  Logger.log("GitHub Response: " + response.getContentText());
 }
+
 ```
 
 ---
